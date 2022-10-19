@@ -9,16 +9,23 @@ conectarBD()
 //inicializar express
 const app = express()
 
+//configuracion
+const port=process.env.PORT || 4000
+
 //middlewares
 app.use(express.json())
-app.use(morgan("dev"))
+app.use(morgan("combined"))
 app.use(cors())
 
 //rutas
+app.use(require("./src/routes/userRouts"))
+app.use(require("./src/routes/routsTask"))
 app.use(require("./src/routes/auth.routes"))
 
 
 //definir el puerto
-app.listen(3000)
+app.listen(3000,()=>{
+    console.log(`servidor corriendo en puerto ${port}`)
+})
 
 

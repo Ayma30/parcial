@@ -1,21 +1,51 @@
-const ctrl = {}
-const Usermodel = require("../models/users.model")
-const bcrypt = require("bcrypt")
+const User =require("../models/users.model")
 
-ctrl.registrarse = async(req, res)=>{
-    const {nombre, correo, contraseña} = req.body
+const generarJWT=require("../helper/generarJwt")
+const bcrypt=require('bcrypt')
 
-    const nuevaContraseña = bcrypt.hashSync(contraseña, 10)
+const CtrlAuth={}
 
+CtrlAuth.iniciarSesion=async(req,res)=>{
+const {usuario,password}=req.body
 
-    const user = new Usermodel({
-        nombre, correo, contraseña: nuevaContraseña
+try {
+    const user =await User.findOne({usuario});
+
+    if (!user){
+        return res.status(400).json({
+            ok:false,
+            message:"Error al autenticarse, Usuario no encontrado"
+        })
+    }
+    if (!user.isActive){
+        return res.status(400).json({
+            ok:false,
+            message:"Error al autenticarse, Usuario en estado falso"
+        })
+    }
+// verificar la contraseña
+const validPassword=bcrypt.compareSync(password,user.password)
+
+if (!validPassword){
+    return res.status(400).json({
+        message:"Error el autenticarse, Contraseña incorrecta"
     })
+}
+// generamos el token
+const token =await generarJWT({uid:user.id})
+return res.json({message:"Has iniciado sesion con exito",
+token
+})
 
-    const guardar = await user.save()
+} catch (error) {
+    return res.json({
+        error:error.message
+        
+    })
+}
 
-    res.json(guardar)
 }
 
 
-module.exports = ctrl;
+
+module.exports=CtrlAuth
