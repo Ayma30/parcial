@@ -4,7 +4,7 @@ const {getUser,postUser,putUser,deleteUser}=require("../controllers/controladorU
 
 const validaeJWT=require('../middleware/validarJWT')
 
-router.get("/user",getUser)
+router.get("/user",[validaeJWT],getUser)
 router.post("/user",postUser)
 router.put("/user/:idUser",[validaeJWT],putUser)
 router.delete("/user/:idUser",[validaeJWT],deleteUser)

@@ -2,25 +2,26 @@ const Tareas = require("../models/modelsTask")
 
 const CtrlTarea = {}
 
-// CtrlTarea.getTarea = async (req, res) => {
-//     try {
-//         const tasks = await Tareas.find({
-//             active: true
-//         })
-
-//         return res.json({
-//             message: "Tarea encontrado con exito",
-//             tasks
-//         })
-
-
-//     } catch (error) {
-
-//     }
-
-
-// }
 CtrlTarea.getTarea = async (req, res) => {
+    try {
+        const tasks = await Tareas.find({
+            active: true
+        })
+        
+
+        return res.json({
+            message: "Tarea encontrado con exito",
+            tasks
+        })
+
+
+    } catch (error) {
+
+    }
+
+
+}
+CtrlTarea.getTareaforUser = async (req, res) => {
     try {
         const idUser = req.user._id
         console.log(idUser)
@@ -125,9 +126,9 @@ return res.json({error:error.message})
 CtrlTarea.deleteTarea = async(req,res) => {
 try {
     const idUser=req.user._id
-    const idTarea=req.params.idTarea
-    const tareas= await Tareas.findOne({$and:[{_id:idTarea},{isActive:true}]})
-if (!tareas || !tareas.isActive){
+    const idTarea=req.params['idTask']
+    const tareas= await Tareas.findOne({$and:[{_id:idTarea}]})
+if (!tareas){
 res.status(404).json({message:"No existe la tarea"})
 
 }
